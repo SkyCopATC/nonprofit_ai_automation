@@ -349,6 +349,23 @@ input[type=range]:disabled{opacity:.5;cursor:not-allowed}
 .btn-print{background:#fff;color:var(--navy);border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s}
 .btn-print:hover{border-color:var(--navy);background:var(--light)}
 #print-overlay{display:none}
+
+/* ── MOBILE SIDEBAR TOGGLE ── */
+.mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:30;background:var(--navy);color:#fff;border:none;border-radius:8px;width:42px;height:42px;font-size:22px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15);align-items:center;justify-content:center;padding:0}
+.mobile-toggle:hover{background:#264a73}
+.sidebar-close{display:none;position:absolute;top:12px;right:12px;background:rgba(255,255,255,.08);border:none;color:#fff;width:34px;height:34px;font-size:20px;line-height:1;cursor:pointer;padding:0;border-radius:8px;z-index:5;align-items:center;justify-content:center}
+.sidebar-close:hover{background:rgba(255,255,255,.18)}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9}
+.sidebar-backdrop.show{display:block}
+@media(max-width:768px){
+  .mobile-toggle{display:flex}
+  .sidebar-close{display:flex}
+  .sidebar{transform:translateX(-100%);transition:transform .25s ease;width:260px;box-shadow:0 0 24px rgba(0,0,0,.25)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .page{padding:64px 16px 24px}
+}
+
 @media print{
   body>*:not(#print-overlay){display:none!important}
   #print-overlay{display:block!important;position:fixed;top:0;left:0;width:100%;padding:40px 60px;box-sizing:border-box;background:#fff;font-family:Georgia,serif}
@@ -508,8 +525,11 @@ input[type=range]:disabled{opacity:.5;cursor:not-allowed}
 
 <!-- ════════════ MAIN APP ════════════ -->
 <div id="screen-app" class="app hidden">
+  <button class="mobile-toggle" type="button" onclick="toggleSidebar()" aria-label="Open menu">☰</button>
+  <div class="sidebar-backdrop" onclick="closeSidebar()"></div>
   <!-- Sidebar -->
   <aside class="sidebar">
+    <button class="sidebar-close" type="button" onclick="closeSidebar()" aria-label="Close menu">✕</button>
     <div class="sidebar-logo">
       <div class="mark">B</div>
       <div class="text"><p>Build Your Club</p><span>Nonprofit AI</span></div>
@@ -2474,6 +2494,21 @@ if (state.user) {
 } else {
   document.getElementById('screen-auth').classList.remove('hidden');
 }
+</script>
+<script>
+function toggleSidebar(){
+  document.querySelector('.sidebar')?.classList.toggle('open');
+  document.querySelector('.sidebar-backdrop')?.classList.toggle('show');
+}
+function closeSidebar(){
+  document.querySelector('.sidebar')?.classList.remove('open');
+  document.querySelector('.sidebar-backdrop')?.classList.remove('show');
+}
+document.addEventListener('click', function(e){
+  if (window.innerWidth <= 768 && e.target.closest('.nav-item')) {
+    closeSidebar();
+  }
+});
 </script>
 </body>
 </html>
