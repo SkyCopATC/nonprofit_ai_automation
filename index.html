@@ -1060,7 +1060,9 @@ function doRegister() {
     teamId   = enteredCode;
     state.teams[enteredCode].memberCount = (state.teams[enteredCode].memberCount || 0) + 1;
   }
-  const user = { name:name||email.split('@')[0], email, pass:btoa(pass), orgName:'', sector:'', role:'', city:'', state:'', orgSize:'', website:'', mission:'', isPro:false, favorites:[], history:[], weeklyUsed:0, weeklyReset:new Date().toISOString(), teamRole:teamRole, teamId:teamId };
+  // First registered user in this browser becomes admin (no email hardcoded in source)
+  const isFirstUser = Object.keys(state.users).length === 0;
+  const user = { name:name||email.split('@')[0], email, pass:btoa(pass), orgName:'', sector:'', role:'', city:'', state:'', orgSize:'', website:'', mission:'', isPro:false, isAdmin:isFirstUser, favorites:[], history:[], weeklyUsed:0, weeklyReset:new Date().toISOString(), teamRole:teamRole, teamId:teamId };
   state.users[email] = user;
   state.user = user;
   state.favorites = [];
@@ -1175,7 +1177,7 @@ function updateSidebar() {
   const teamNavBtn = document.getElementById('nav-team');
   if (teamNavBtn) teamNavBtn.style.display = (u.teamRole === 'leader') ? '' : 'none';
   const adminNavBtn = document.getElementById('nav-admin');
-  if (adminNavBtn) adminNavBtn.style.display = (u.email === 'skycopatc@yahoo.com') ? '' : 'none';
+  if (adminNavBtn) adminNavBtn.style.display = (u.isAdmin === true) ? '' : 'none';
 }
 
 // ═══════════════════════════════════════════════
@@ -2354,7 +2356,7 @@ function renderAdminList() {
     const total = hist.length;
     const thisMonth = hist.filter(g => now - g.ts < 30*24*60*60*1000).length;
     const lastActive = hist.length ? relTime(Math.max(...hist.map(h => h.ts))) : (u.created ? relTime(u.created) + ' (joined)' : 'Never');
-    const isAdmin = u.email === 'skycopatc@yahoo.com';
+    const isAdmin = u.isAdmin === true;
     const isED = u.teamRole === 'leader';
 
     const badges = [
@@ -2413,7 +2415,7 @@ function renderAdminList() {
 
 function renderAdmin(el) {
   const u = state.user;
-  if (u.email !== 'skycopatc@yahoo.com') {
+  if (!u || u.isAdmin !== true) {
     el.innerHTML = '<div style="padding:2rem;color:#94A3B8">Access denied.</div>';
     return;
   }
@@ -2453,42 +2455,11 @@ function renderAdmin(el) {
 // ═══════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════
-function seedAdminAccount() {
-  const email = 'skycopatc@yahoo.com';
-  if (state.users[email]) {
-    // Account exists — make sure it stays up-to-date with the right role/team
-    const u = state.users[email];
-    if (!u.teamId) {
-      const code = generateTeamCode(email);
-      state.teams[code] = state.teams[code] || { leaderEmail: email, orgName: u.orgName || 'Build Your Club', created: Date.now(), memberCount: 0 };
-      u.teamRole = 'leader'; u.teamId = code;
-      state.users[email] = u;
-      save();
-    }
-    return;
-  }
-  const code = generateTeamCode(email);
-  state.teams[code] = { leaderEmail: email, orgName: 'Build Your Club', created: Date.now(), memberCount: 0 };
-  const user = {
-    name: 'Steve',
-    email: email,
-    pass: btoa('change-me-in-settings'),
-    orgName: 'Build Your Club',
-    sector: 'social_services',
-    role: 'executive_director',
-    city: '', state: '', orgSize: '', website: '', mission: '',
-    isPro: true,
-    favorites: [], history: [],
-    weeklyUsed: 0, weeklyReset: new Date().toISOString(),
-    teamRole: 'leader',
-    teamId: code
-  };
-  state.users[email] = user;
-  save();
-}
+// No account is seeded on load. The first user to register in this browser
+// is automatically granted isAdmin (see doRegister). No personal email is
+// hardcoded in source.
 
 load();
-seedAdminAccount();
 if (state.user) {
   bootApp();
 } else {
