@@ -446,7 +446,7 @@ input[type=range]:disabled{opacity:.5;cursor:not-allowed}
       <p>Sign in to your Build Your Club account</p>
       <div id="signin-err" class="err-msg hidden"></div>
       <div class="field"><label>Email</label><input id="si-email" type="email" placeholder="you@yourorg.org"></div>
-      <div class="field"><label>Password</label><input id="si-pass" type="password" placeholder="Your password"></div>
+      <div class="field"><label>Password</label><input id="si-pass" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doSignIn()"></div>
       <button class="btn btn-primary btn-full btn-lg" onclick="doSignIn()">Sign in</button>
       <div class="auth-switch">Don't have an account? <a onclick="showView('register')">Create one free</a></div>
     </div>
@@ -461,7 +461,7 @@ input[type=range]:disabled{opacity:.5;cursor:not-allowed}
       <div class="field"><label>Your name</label><input id="r-name" type="text" placeholder="Maya Chen"></div>
       <div class="field"><label>Email <span class="req">*</span></label><input id="r-email" type="email" placeholder="maya@yourorg.org"></div>
       <div class="field"><label>Password <span class="req">*</span></label><input id="r-pass" type="password" placeholder="8+ characters"></div>
-      <div class="field"><label>Team Code <span style="font-size:11px;color:var(--muted);font-weight:400">(optional — enter if your ED shared one)</span></label><input id="r-teamcode" type="text" placeholder="BYC-XXXX" style="text-transform:uppercase;letter-spacing:.05em"></div>
+      <div class="field"><label>Team Code <span style="font-size:11px;color:var(--muted);font-weight:400">(optional — enter if your ED shared one)</span></label><input id="r-teamcode" type="text" placeholder="BYC-XXXX" style="text-transform:uppercase;letter-spacing:.05em" onkeydown="if(event.key==='Enter')doRegister()"></div>
       <button class="btn btn-primary btn-full btn-lg" onclick="doRegister()">Create free account →</button>
       <div class="auth-switch">Already have an account? <a onclick="showView('signin')">Sign in</a></div>
     </div>
